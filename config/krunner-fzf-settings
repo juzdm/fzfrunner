@@ -1,0 +1,124 @@
+[General]
+TerminalExecutable=/usr/bin/konsole
+
+[Command_FindFiles]
+Name=Find Files (fzf)
+Description=Interactively find files using fd and fzf
+Icon=system-search
+TriggerWords=ff, findf
+CommandTemplate={FZF_EXTENDS_DIR}/fzf_find_files.sh {query}  > {output_file} 
+ExecutionMode=Terminal
+ResultType=FilePath
+ResultFileTemplate=%temp_script%.result 
+DefaultAction=OpenFileOrCD
+Action_vscode=OpenFileWithVSCode
+Action_kate=OpenFileWithKate
+Action_notepadpluplus=notepad-plus-plus {SelectedItem}
+
+
+[Command_FindFilesOrDir]
+Name=Find Files Or Dir (fzf)
+Description=Interactively find files or dir using fd and fzf 
+Icon=system-search
+TriggerWords=fz, findz
+CommandTemplate={FZF_EXTENDS_DIR}/fzf_find_files_under.sh {query}  > {output_file} 
+ExecutionMode=Terminal
+ResultType=FilePath
+ResultFileTemplate=%temp_script%.result 
+DefaultAction=OpenFileOrCD
+Action_vscode=OpenFileWithVSCode
+Action_konsole=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/terminal_open.sh {SelectedItem}
+Action_kate=OpenFileWithKate
+
+[Command_SearchHistory]
+Name=Search History (fzf)
+Description=Interactively search command history using fzf
+Icon=utilities-terminal
+TriggerWords=hist, fh
+CommandTemplate=history | fzf --query {query} > {output_file}
+ExecutionMode=Terminal
+ResultType=PlainText 
+ResultFileTemplate=%temp_script%.result
+DefaultAction=CopyToClipboard
+
+[Command_GitBranch]
+Name=Checkout Git Branch (fzf)
+Description=Interactively checkout git branch using fzf
+Icon=vcs-branch
+TriggerWords=fzb, gitb
+CommandTemplate=git branch | fzf | xargs git checkout
+ExecutionMode=Terminal
+ResultType=None 
+DefaultAction=None
+
+[Command_OpenProject]
+Name=Open Project in VSCode
+Description=Directly open a predefined project directory in VSCode
+Icon=visual-studio-code
+TriggerWords=proj_myproject
+CommandTemplate=code /path/to/my/project/directory
+ExecutionMode=Background 
+ResultType=None
+DefaultAction=None
+WorkingDirectoryMode=Home 
+
+[Command_WebSearch]
+Name=Search Web (DuckDuckGo)
+Description=Search the web using DuckDuckGo
+Icon=internet-web-browser
+TriggerWords=web, ddg
+CommandTemplate=xdg-open "https://duckduckgo.com/?q={query}"
+ExecutionMode=Background
+ResultType=None
+DefaultAction=None
+
+[Command_sing-box]
+Name=sing-box
+Description=switch sing-box running state
+Icon=utilities-terminal
+TriggerWords=sin, sing-box
+CommandTemplate=echo '{query}'
+ExecutionMode=Background
+ResultType=None
+DefaultAction=None
+Action_sing-box-run=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/sing-box_switch.sh on 
+Action_sing-box-stop=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/sing-box_switch.sh off
+
+[Command_TmuxSession]
+Name=Tmux Session
+Description=管理 tmux 会话
+Icon=utilities-terminal
+TriggerWords=tm, tmux
+CommandTemplate=echo {query}  > {output_file} 
+ResultFileTemplate=%temp_script%.result
+ExecutionMode=Background
+ResultType=None
+DefaultAction=None
+Action_list=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/tmux_session.sh list
+Action_new=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/tmux_session.sh new {SelectedItem}
+
+[Command_VSCodeRecent]
+Name=VSCode Recent Projects
+Description=浏览并打开 VS Code 最近的项目
+Icon=visual-studio-code
+TriggerWords=code, vr
+CommandTemplate={FZF_EXTENDS_DIR}/vscode_recent.sh {query} > {output_file}
+ExecutionMode=Terminal
+ResultType=FilePath
+ResultFileTemplate=%temp_script%.result
+DefaultAction=OpenFileOrCD
+Action_vscode=OpenFileWithVSCode
+
+[Command_FindRepos]
+Name=Find Repo Repositories (fzf)
+Description=使用 fzf 交互式查找 repo 仓库
+Icon=folder-git
+TriggerWords=fr, repo
+CommandTemplate={FZF_EXTENDS_DIR}/fzf_find_repos.sh {query} > {output_file}
+ExecutionMode=Terminal
+ResultType=FilePath
+ResultFileTemplate=%temp_script%.result
+DefaultAction=OpenFileOrCD
+Action_vscode=OpenFileWithVSCode
+Action_konsole=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/terminal_open.sh {SelectedItem}
+

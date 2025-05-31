@@ -1,0 +1,62 @@
+{
+    "KPlugin": {
+        "Id": "fzfrunner",
+        "Name": "FZF File Search",
+        "Description": "使用 fzf 搜索文件",
+        "ServiceTypes": [ "Plasma/Runner" ],
+        "Version": "1.0",
+        "Authors": [
+            { "Name": "Your Name", "Email": "your@email.com" }
+        ]
+    },
+    "ConfigSchema": {
+      "triggerWord": {
+        "type": "string",
+        "default": "fz",
+        "label": "Trigger Word",
+        "description": "The word that triggers the fzf file search. Use 'fz' for default opener, 'fzv' for VS Code."
+      },
+      "fdExecutable": {
+        "type": "string",
+        "default": "fd",
+        "label": "fd Executable Path",
+        "description": "The full path to the fd executable."
+      },
+      "fzfExecutable": {
+        "type": "string",
+        "default": "fzf",
+        "label": "fzf Executable Path",
+        "description": "The full path to the fzf executable."
+      },
+      "includeHidden": {
+        "type": "bool",
+        "default": false,
+        "label": "Include Hidden Files",
+        "description": "Whether to include hidden files and directories in the search."
+      },
+      "excludeGit": {
+        "type": "bool",
+        "default": true,
+        "label": "Exclude .git Directories",
+        "description": "Whether to exclude .git directories from the search."
+      },
+      "exactMatch": {
+        "type": "bool",
+        "default": false,
+        "label": "Use Exact Match",
+        "description": "Whether to use exact matching in fzf."
+      },
+      "noSort": {
+        "type": "bool",
+        "default": true,
+        "label": "Disable Sorting in fzf",
+        "description": "Whether to disable sorting in fzf."
+      },
+      "timeout": {
+        "type": "int",
+        "default": 3000,
+        "label": "Timeout (ms)",
+        "description": "The timeout in milliseconds for the fzf search."
+      }
+    }
+  }
