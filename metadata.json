@@ -3,7 +3,7 @@
         "Id": "fzfrunner",
         "Name": "FZF File Search",
         "Description": "使用 fzf 搜索文件",
-        "ServiceTypes": [ "Plasma/Runner" ],
+        "ServiceTypes": [ "KRunner/Runner" ],
         "Version": "1.0",
         "License": "LGPL-2.1+",
         "Category": "System",

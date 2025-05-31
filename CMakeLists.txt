@@ -16,10 +16,6 @@ include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(FeatureSummary)
 
-# 设置插件安装路径
-set(KF6_PLUGIN_INSTALL_DIR "lib/x86_64-linux-gnu/qt6/plugins/kf6")
-set(KDE_INSTALL_KSERVICES6DIR "share/kservices6")
-
 # 添加必要的依赖
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 find_package(KF6 REQUIRED COMPONENTS 
@@ -32,42 +28,19 @@ find_package(KF6 REQUIRED COMPONENTS
 )
 find_package(Plasma REQUIRED)
 
-# 尝试安装配置文件
-set(CONFIG_INSTALL_DIR "$ENV{HOME}/.config" CACHE PATH "配置文件安装路径")
-install(FILES config/krunner-fzf-settings
-    DESTINATION ${CONFIG_INSTALL_DIR}
-    OPTIONAL
-    PERMISSIONS OWNER_READ OWNER_WRITE GROUP_READ WORLD_READ
-)
+# 手动设置安装路径
+set(KDE_INSTALL_PLUGINDIR "lib/x86_64-linux-gnu/plugins")
+set(KDE_INSTALL_KSERVICES6DIR "share/kservices6")
 
-# 如果安装配置文件失败，输出警告信息
-if(NOT EXISTS "${CONFIG_INSTALL_DIR}/krunner-fzf-settings")
-    message(WARNING "配置文件未能安装到 ${CONFIG_INSTALL_DIR}/krunner-fzf-settings\n"
-                   "请手动复制配置文件或使用默认配置")
-endif()
+# 检查变量
+message(STATUS "KDE_INSTALL_PLUGINDIR = ${KDE_INSTALL_PLUGINDIR}")
+message(STATUS "KDE_INSTALL_KSERVICES6DIR = ${KDE_INSTALL_KSERVICES6DIR}")
 
-# 定义扩展脚本安装路径
-set(EXTENDS_INSTALL_DIR "$ENV{HOME}/.local/share/krunner-fzf/extends" 
-    CACHE PATH "扩展脚本安装路径")
-
-# 确保目录存在
-install(DIRECTORY DESTINATION ${EXTENDS_INSTALL_DIR})
-
-# 安装扩展脚本
-install(FILES 
-    extends/fzf_find_files.sh
-    extends/fzf_find_files_under.sh
-    extends/terminal_open.sh
-    extends/sing-box_switch.sh
-    extends/tmux_session.sh
-    extends/vscode_recent.sh
-    extends/aosp-find-repo.sh
-    extends/fzf_find_repos.sh
-    DESTINATION ${EXTENDS_INSTALL_DIR}
-    PERMISSIONS OWNER_READ OWNER_WRITE OWNER_EXECUTE
-                GROUP_READ GROUP_EXECUTE
-                WORLD_READ WORLD_EXECUTE
-)
+# 设置安装路径
+set(PLUGIN_INSTALL_DIR "${KDE_INSTALL_PLUGINDIR}/kf6/krunner")
+set(SERVICES_INSTALL_DIR "${KDE_INSTALL_KSERVICES6DIR}")
+set(CONFIG_INSTALL_DIR "$ENV{HOME}/.config")
+set(EXTENDS_INSTALL_DIR "$ENV{HOME}/.local/share/krunner-fzf/extends")
 
 # 将扩展脚本路径定义为编译时常量
 add_compile_definitions(FZF_EXTENDS_DIR="${EXTENDS_INSTALL_DIR}")
@@ -107,10 +80,23 @@ target_link_libraries(krunner_fzfrunner
         Plasma::Plasma
 )
 
+# 安装插件
 install(TARGETS krunner_fzfrunner DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf6/krunner)
-install(FILES metadata.json
-    DESTINATION ${KF6_PLUGIN_INSTALL_DIR}/krunner
-)
-install(FILES org.kde.krunner.fzfrunner.desktop
-    DESTINATION ${KDE_INSTALL_KSERVICES6DIR}
+install(FILES metadata.json DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf6/krunner)
+install(FILES org.kde.krunner.fzfrunner.desktop DESTINATION ${KDE_INSTALL_KSERVICES6DIR})
+
+# 安装配置文件
+install(FILES config/krunner-fzf-settings DESTINATION ${CONFIG_INSTALL_DIR})
+
+# 安装扩展脚本
+install(PROGRAMS
+    extends/fzf_find_files.sh
+    extends/fzf_find_files_under.sh
+    extends/terminal_open.sh
+    extends/sing-box_switch.sh
+    extends/tmux_session.sh
+    extends/vscode_recent.sh
+    extends/aosp-find-repo.sh
+    extends/fzf_find_repos.sh
+    DESTINATION ${EXTENDS_INSTALL_DIR}
 )
