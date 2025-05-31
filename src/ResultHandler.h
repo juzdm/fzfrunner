@@ -3,10 +3,10 @@
 
 #include <QObject>
 #include <QString>
-#include <QProcess> // 需要包含 QProcess::ExitStatus
+#include <QProcess>
+#include <KIO/ApplicationLauncherJob>
 #include <KIO/OpenUrlJob>
-#include <KIO/CommandLauncherJob>
-#include "CommandDefinition.h" // 包含命令定义
+#include "CommandDefinition.h"
 
 // 负责处理已完成进程的结果
 class ResultHandler : public QObject

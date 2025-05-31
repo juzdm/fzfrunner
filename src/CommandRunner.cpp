@@ -3,31 +3,28 @@
 #include "ScriptBuilder.h"
 #include "ResultHandler.h"
 #include "CommandDefinition.h"
+#include <KRunner/AbstractRunner>
 #include <KRunner/RunnerContext>
 #include <KRunner/QueryMatch>
-#include <KPluginMetaData>
-#include <KLocalizedString> // 用于 i18n
+#include <KRunner/Action>
+#include <KPluginFactory>
+#include <KLocalizedString>
 #include <QDebug>
 #include <QDir>
 #include <QStandardPaths>
 #include <QUuid>
 #include <QFileInfo>
-#include <QTemporaryFile> // 仅用于可能的路径生成，不直接使用对象
+#include <QTemporaryFile>
 
-// 注册插件类
-#include <KPluginFactory>
-K_PLUGIN_FACTORY_WITH_JSON(CommandRunnerFactory, "metadata.json", registerPlugin<CommandRunner>();)
+K_PLUGIN_CLASS_WITH_JSON(CommandRunner, "metadata.json")
 
-
-CommandRunner::CommandRunner(QObject *parent, const KPluginMetaData &metaData, const QVariantList &args)
-    : Plasma::AbstractRunner(parent, metaData, args), // 调用基类构造函数
+CommandRunner::CommandRunner(QObject *parent, const KPluginMetaData &metaData)
+    : KRunner::AbstractRunner(parent, metaData),
       m_configManager(new ConfigManager(this)),
-      m_scriptBuilder(new ScriptBuilder()), // ScriptBuilder 通常无状态，不需要 parent
+      m_scriptBuilder(new ScriptBuilder()),
       m_resultHandler(new ResultHandler(this))
 {
-    // 设置 Runner 的基本属性
     setObjectName(i18n("Generic Command Runner")); // 插件名称
-    setPriority(HighestPriority); // 设置优先级
     setMinLetterCount(1); // 触发词本身可能很短
 
     init(); // 初始化加载配置等
@@ -82,7 +79,7 @@ QString CommandRunner::getActionMatchIcon(const QString& suffix, const QString& 
     return defaultIcon;
 }
 
-void CommandRunner::match(Plasma::RunnerContext &context)
+void CommandRunner::match(KRunner::RunnerContext &context)
 {
     if (m_reloading || !context.isValid()) {
         return; // 如果正在重载或上下文无效，则跳过
@@ -91,7 +88,7 @@ void CommandRunner::match(Plasma::RunnerContext &context)
     const QString query = context.query().trimmed();
     const QList<CommandDefinition>& definitions = m_configManager->getCommandDefinitions();
 
-    QList<Plasma::QueryMatch> matches; // 存储匹配结果
+    QList<KRunner::QueryMatch> matches; // 存储匹配结果
 
     for (const CommandDefinition& def : definitions) {
         for (const QString& trigger : def.triggerWords) {
@@ -103,51 +100,40 @@ void CommandRunner::match(Plasma::RunnerContext &context)
                 }
 
                 // --- 创建默认匹配项 ---
-                Plasma::QueryMatch match(this);
+                KRunner::QueryMatch match(this);
                 match.setText(def.name); // 显示命令名称
                 match.setSubtext(def.description.isEmpty() ? query : def.description); // 显示描述或原始查询
                 match.setIconName(def.icon);
-                match.setType(Plasma::QueryMatch::ExactMatch); // 或根据需要调整类型
                 match.setRelevance(0.8); // 设置相关性 (可以根据匹配质量调整)
 
                 // 将命令 ID 和查询参数编码到数据中
-                // 使用分隔符 "|" (确保 ID 和参数中不包含此字符，或进行转义)
                 match.setData(def.id + "|" + queryArgs);
                 matches.append(match);
 
-                 // --- 为特定动作创建匹配项 (如果配置了) ---
-                 for (auto it = def.specificActions.constBegin(); it != def.specificActions.constEnd(); ++it) {
-                     QString suffix = it.key();
-                     QString actionName = it.value(); // 配置中的动作标识符 (例如 "OpenFileWithVSCode")
+                // --- 为特定动作创建匹配项 (如果配置了) ---
+                for (auto it = def.specificActions.constBegin(); it != def.specificActions.constEnd(); ++it) {
+                    QString suffix = it.key();
+                    QString actionName = it.value();
 
-                     Plasma::QueryMatch actionMatch(this);
-                     // 可以根据 actionName 定制显示文本
-                     actionMatch.setText(QString("%1 (%2)").arg(def.name).arg(suffix)); // 例如 "Find File (vscode)"
-                     actionMatch.setSubtext(def.description);
-                     // 使用新函数设置图标
-                     actionMatch.setIconName(getActionMatchIcon(suffix, def.icon));
-                     actionMatch.setType(Plasma::QueryMatch::ExactMatch);
-                     actionMatch.setRelevance(match.relevance() - 0.1); // 相关性稍低
+                    KRunner::QueryMatch actionMatch(this);
+                    actionMatch.setText(QString("%1 (%2)").arg(def.name).arg(suffix));
+                    actionMatch.setSubtext(def.description);
+                    actionMatch.setIconName(getActionMatchIcon(suffix, def.icon));
+                    actionMatch.setRelevance(match.relevance() - 0.1);
+                    actionMatch.setData(def.id + "|" + queryArgs + "|" + suffix);
+                    matches.append(actionMatch);
+                }
 
-                     // 在数据中添加后缀
-                     actionMatch.setData(def.id + "|" + queryArgs + "|" + suffix);
-                     matches.append(actionMatch);
-                 }
-
-
-                // 找到一个匹配的触发词后，可以跳出内部循环处理下一个定义
-                // 或者如果允许一个查询匹配多个定义，则继续
-                goto next_definition; // 使用 goto 跳出内层循环，处理下一个定义
+                goto next_definition;
             }
         }
-        next_definition:; // 跳转标签
+        next_definition:;
     }
 
-    // 将所有找到的匹配项添加到上下文
     context.addMatches(matches);
 }
 
-void CommandRunner::run(const Plasma::RunnerContext &context, const Plasma::QueryMatch &match)
+void CommandRunner::run(const KRunner::RunnerContext &context, const KRunner::QueryMatch &match)
 {
     Q_UNUSED(context); // 上下文可能在 run 中不需要
 

@@ -5,8 +5,14 @@
         "Description": "使用 fzf 搜索文件",
         "ServiceTypes": [ "Plasma/Runner" ],
         "Version": "1.0",
+        "License": "LGPL-2.1+",
+        "Category": "System",
+        "EnabledByDefault": true,
         "Authors": [
-            { "Name": "Your Name", "Email": "your@email.com" }
+            { 
+                "Name": "Your Name",
+                "Email": "your@email.com"
+            }
         ]
     },
     "ConfigSchema": {
