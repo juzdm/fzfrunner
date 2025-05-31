@@ -13,4 +13,5 @@ X-KDE-PluginInfo-Website=https://example.com
 X-KDE-PluginInfo-Category=Utilities
 X-KDE-PluginInfo-License=LGPL-2.1+
 X-KDE-PluginInfo-EnabledByDefault=true
+X-Plasma-API=DBus
 X-KDE-Permissions=exec
