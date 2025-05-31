@@ -7,7 +7,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# 设置模块路径
+# Find ECM
 find_package(ECM REQUIRED NO_MODULE)
 set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
 
@@ -16,7 +16,7 @@ include(KDECMakeSettings)
 include(KDECompilerSettings NO_POLICY_SCOPE)
 include(FeatureSummary)
 
-# 添加必要的依赖
+# Required dependencies
 find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
 find_package(KF6 REQUIRED COMPONENTS 
     Runner 
@@ -28,23 +28,7 @@ find_package(KF6 REQUIRED COMPONENTS
 )
 find_package(Plasma REQUIRED)
 
-# 手动设置安装路径
-set(KDE_INSTALL_PLUGINDIR "lib/x86_64-linux-gnu/plugins")
-set(KDE_INSTALL_KSERVICES6DIR "share/kservices6")
-
-# 检查变量
-message(STATUS "KDE_INSTALL_PLUGINDIR = ${KDE_INSTALL_PLUGINDIR}")
-message(STATUS "KDE_INSTALL_KSERVICES6DIR = ${KDE_INSTALL_KSERVICES6DIR}")
-
-# 设置安装路径
-set(PLUGIN_INSTALL_DIR "${KDE_INSTALL_PLUGINDIR}/kf6/krunner")
-set(SERVICES_INSTALL_DIR "${KDE_INSTALL_KSERVICES6DIR}")
-set(CONFIG_INSTALL_DIR "$ENV{HOME}/.config")
-set(EXTENDS_INSTALL_DIR "$ENV{HOME}/.local/share/krunner-fzf/extends")
-
-# 将扩展脚本路径定义为编译时常量
-add_compile_definitions(FZF_EXTENDS_DIR="${EXTENDS_INSTALL_DIR}")
-
+# Source files
 set(krunner_fzfrunner_SRCS
     src/CommandRunner.cpp
     src/ConfigManager.cpp
@@ -80,15 +64,22 @@ target_link_libraries(krunner_fzfrunner
         Plasma::Plasma
 )
 
-# 安装插件
-install(TARGETS krunner_fzfrunner DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf6/krunner)
-install(FILES metadata.json DESTINATION ${KDE_INSTALL_PLUGINDIR}/kf6/krunner)
-install(FILES org.kde.krunner.fzfrunner.desktop DESTINATION ${KDE_INSTALL_KSERVICES6DIR})
+# Installation paths
+install(TARGETS krunner_fzfrunner DESTINATION ${CMAKE_INSTALL_LIBDIR}/qt6/plugins/kf6/krunner)
+install(FILES metadata.json DESTINATION ${CMAKE_INSTALL_LIBDIR}/qt6/plugins/kf6/krunner)
+install(FILES org.kde.krunner.fzfrunner.desktop DESTINATION ${KDE_INSTALL_DATAROOTDIR}/kservices6)
 
-# 安装配置文件
+# Config and extends installation
+set(CONFIG_INSTALL_DIR "$ENV{HOME}/.config")
+set(EXTENDS_INSTALL_DIR "$ENV{HOME}/.local/share/krunner-fzf/extends")
+
+# Add extends directory path as compile definition
+add_compile_definitions(FZF_EXTENDS_DIR="${EXTENDS_INSTALL_DIR}")
+
+# Install config file
 install(FILES config/krunner-fzf-settings DESTINATION ${CONFIG_INSTALL_DIR})
 
-# 安装扩展脚本
+# Install extends scripts
 install(PROGRAMS
     extends/fzf_find_files.sh
     extends/fzf_find_files_under.sh
