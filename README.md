@@ -252,6 +252,3 @@ Action_customaction=CustomActionName
 - [KDE 开发者社区](https://community.kde.org/Get_Involved/development)
 
 ## 💬 联系方式
-
-- Issue Tracker: [GitHub Issues](https://github.com/yourusername/krunner-cmdrunner/issues)
-- 邮件列表: your-email@example.com
