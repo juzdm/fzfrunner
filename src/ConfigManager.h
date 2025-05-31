@@ -3,8 +3,9 @@
 
 #include <QObject>
 #include <QList>
-#include <KSharedConfig>
-#include "CommandDefinition.h" // 包含命令定义的头文件
+#include <KConfigCore/KSharedConfig>
+#include <KConfigCore/KConfigGroup>
+#include "CommandDefinition.h"
 
 // 负责加载和解析插件配置
 class ConfigManager : public QObject

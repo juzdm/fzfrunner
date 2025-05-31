@@ -1,15 +1,21 @@
 #include "ResultHandler.h"
-#include <QFile>
-#include <QFileInfo>
-#include <QDir>
-#include <QTextStream>
 #include <QDebug>
+#include <QProcess>
+#include <QFile>
+#include <QDir>
+#include <QFileInfo>
+#include <QClipboard>
+#include <QGuiApplication>
+#include <QMimeData>
+#include <QRegularExpression>
+#include <KIO/OpenUrlJob>
+#include <KIO/JobUiDelegateFactory>
+#include <KNotification>
+#include <KService>
+#include <QTextStream>
 #include <QUrl>
 #include <QDesktopServices> // 用于 openUrl
-#include <QClipboard>       // 用于剪贴板
-#include <QGuiApplication>  // 用于访问剪贴板
 #include <KIO/Job>          // 用于 KIO::OpenUrlJob (更 KDE 的方式)
-#include <KIO/JobUiDelegate>
 #include <KConfigGroup>     // 可能需要访问配置来获取终端等
 #include <KSharedConfig>    // 同上
 
@@ -222,7 +228,7 @@ void ResultHandler::openDirectoryInTerminal(const QString& path, const QString& 
     delete terminalProcess; // 清理资源，因为我们使用了 startDetached
 }
 
-void ResultHandler::actionOpenFileOrCD(const QString& path, const QString& workingDir, const QString& terminalExecutable)
+void ResultHandler::actionOpenFileOrCD(const QString& path, const QString& /*workingDir*/, const QString& /*terminalExecutable*/)
 {
     QFileInfo fileInfo(path);
     if (!fileInfo.exists()) {
