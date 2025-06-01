@@ -15,6 +15,10 @@
 #include <QUuid>
 #include <QFileInfo>
 #include <QTemporaryFile>
+#include <QFont>
+#include <QFontDatabase>
+#include <QThread>
+#include <QCoreApplication>
 
 K_PLUGIN_CLASS_WITH_JSON(CommandRunner, "metadata.json")
 
@@ -26,6 +30,17 @@ CommandRunner::CommandRunner(QObject *parent, const KPluginMetaData &metaData)
 {
     setObjectName(i18n("Generic Command Runner")); // 插件名称
     setMinLetterCount(1); // 触发词本身可能很短
+
+    // 禁用字体数据库警告
+    qputenv("QT_LOGGING_RULES", "qt.text.font.db=false;qt.svg=false");
+
+    // 配置字体替换
+    QFont::insertSubstitution("Hack", "Monospace");
+    QFont::insertSubstitution("DejaVu Sans Mono", "Monospace");
+    QFont::insertSubstitution("Noto Sans Mono CJK SC", "Monospace");
+    
+    // 预加载 Monospace 字体以避免运行时加载延迟
+    QFontDatabase::addApplicationFont("/usr/share/fonts/TTF/DejaVuSansMono.ttf");
 
     init(); // 初始化加载配置等
 }
@@ -177,7 +192,17 @@ void CommandRunner::run(const KRunner::RunnerContext &context, const KRunner::Qu
 
 void CommandRunner::executeCommand(const CommandDefinition& definition, const QString& queryArgs, const QString& actionSuffix)
 {
-    QString tempFilePath; // 用于临时脚本或结果文件
+    QString tempFilePath;
+
+    // 确保在主线程中创建 QProcess
+    if (QThread::currentThread() != QCoreApplication::instance()->thread()) {
+        QMetaObject::invokeMethod(this, "executeCommand",
+                                 Qt::QueuedConnection,
+                                 Q_ARG(CommandDefinition, definition),
+                                 Q_ARG(QString, queryArgs),
+                                 Q_ARG(QString, actionSuffix));
+        return;
+    }
 
     // 检查是否需要临时文件
     bool needsResultFile = !definition.resultFileTemplate.isEmpty();
