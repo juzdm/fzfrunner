@@ -1,8 +1,8 @@
 {
     "KPlugin": {
         "Id": "fzfrunner",
-        "Name": "FZF File Search",
-        "Description": "使用 fzf 搜索文件",
+        "Name": "FZF Runner",
+        "Description": "使用 fzf 进行文件搜索、命令历史、Git 分支切换等操作",
         "ServiceTypes": [ "KRunner/Runner" ],
         "Version": "1.0",
         "License": "LGPL-2.1+",
@@ -10,8 +10,8 @@
         "EnabledByDefault": true,
         "Authors": [
             { 
-                "Name": "Your Name",
-                "Email": "your@email.com"
+                "Name": "zhmminl",
+                "Email": "zhmminl@gmail.com"
             }
         ]
     },
