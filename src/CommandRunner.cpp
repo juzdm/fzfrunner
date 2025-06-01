@@ -108,7 +108,16 @@ void CommandRunner::match(KRunner::RunnerContext &context)
                 match.setText(def.name); // 显示命令名称
                 match.setSubtext(def.description.isEmpty() ? query : def.description); // 显示描述或原始查询
                 match.setIconName(def.icon);
-                match.setRelevance(0.8); // 设置相关性 (可以根据匹配质量调整)
+                
+                // 设置命令优先级
+                if (trigger.startsWith("fz") || trigger.startsWith("ff") || trigger == "findf" || trigger == "findz") {
+                    match.setRelevance(1.0); // fzf 相关命令最高优先级
+                } else if (trigger.startsWith("sin") || trigger == "sing-box" || 
+                         trigger == "web" || trigger == "ddg") {
+                    match.setRelevance(0.9); // sing-box 和 web 搜索次高优先级
+                } else {
+                    match.setRelevance(0.8); // 其他命令保持原有优先级
+                }
 
                 // 将命令 ID 和查询参数编码到数据中
                 match.setData(def.id + "|" + queryArgs);
