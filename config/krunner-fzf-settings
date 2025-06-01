@@ -76,7 +76,7 @@ DefaultAction=None
 Name=Sing-Box 代理
 Description=管理 Sing-Box 代理状态（on: 启动, off: 停止）
 Icon=network-connect
-TriggerWords=sin, sing-box
+TriggerWords=sg, sin, sing-box
 CommandTemplate=echo '{query}'
 ExecutionMode=Background
 ResultType=None
@@ -121,3 +121,14 @@ ResultFileTemplate=%temp_script%.result
 DefaultAction=OpenFileOrCD
 Action_vscode=OpenFileWithVSCode
 Action_konsole=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/terminal_open.sh {SelectedItem}
+
+[Command_TestKRunnerQuery]
+Name=KRunner 查询测试
+Description=使用 fzf 搜索文件并将结果发送到 KRunner（Enter: 发送到 KRunner）
+Icon=system-search
+TriggerWords=fk, findkrunner
+CommandTemplate={FZF_EXTENDS_DIR}/fzf_find_files.sh {query} > {output_file}
+ExecutionMode=Terminal
+ResultType=FilePath
+ResultFileTemplate=%temp_script%.result
+DefaultAction=KRunnerQuery

@@ -17,7 +17,7 @@ include(KDECompilerSettings NO_POLICY_SCOPE)
 include(FeatureSummary)
 
 # Required dependencies
-find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Gui Widgets DBus)
 find_package(KF6 REQUIRED COMPONENTS 
     Runner 
     I18n 
@@ -54,6 +54,7 @@ target_link_libraries(krunner_fzfrunner
         Qt6::Core
         Qt6::Gui
         Qt6::Widgets
+        Qt6::DBus
         KF6::Runner
         KF6::I18n
         KF6::ConfigCore
