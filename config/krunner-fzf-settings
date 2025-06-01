@@ -101,7 +101,7 @@ Action_new=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/tmux_session.sh new {Selec
 Name=VSCode 项目
 Description=浏览并打开 VS Code 最近的项目（Enter: 打开）
 Icon=visual-studio-code
-TriggerWords=vr
+TriggerWords=codeh, codehistory
 CommandTemplate={FZF_EXTENDS_DIR}/vscode_recent.sh {query} > {output_file}
 ExecutionMode=Terminal
 ResultType=FilePath
@@ -121,19 +121,3 @@ ResultFileTemplate=%temp_script%.result
 DefaultAction=OpenFileOrCD
 Action_vscode=OpenFileWithVSCode
 Action_konsole=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/terminal_open.sh {SelectedItem}
-
-[Command_VSCode]
-Name=VSCode 命令
-Description=VS Code 快捷操作（n: 新窗口, d: 比较文件）
-Icon=visual-studio-code
-TriggerWords=code
-CommandTemplate=code {query}
-ExecutionMode=Background
-ResultType=None
-DefaultAction=None
-Action_n=code -n
-Action_d=code -d
-Action_w=code -w
-Action_r=code -r
-Action_a=code --add
-
