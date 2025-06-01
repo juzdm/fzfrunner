@@ -1,15 +1,15 @@
 [Desktop Entry]
-Name=FZF File Search
-Comment=使用 fzf 搜索文件
+Name=FZF Runner
+Comment=使用 fzf 进行文件搜索、命令历史、Git 分支切换等操作
 Icon=system-search
 Type=Service
 ServiceTypes=KRunner/Runner
 X-KDE-Library=krunner_fzfrunner
-X-KDE-PluginInfo-Author=Your Name
-X-KDE-PluginInfo-Email=your@email.com
+X-KDE-PluginInfo-Author=zhmminl
+X-KDE-PluginInfo-Email=zhmminl@gmail.com
 X-KDE-PluginInfo-Name=fzfrunner
 X-KDE-PluginInfo-Version=1.0
-X-KDE-PluginInfo-Website=https://example.com
+X-KDE-PluginInfo-Website=https://github.com/zhmminl
 X-KDE-PluginInfo-Category=Utilities
 X-KDE-PluginInfo-License=LGPL-2.1+
 X-KDE-PluginInfo-EnabledByDefault=true

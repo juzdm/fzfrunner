@@ -110,19 +110,19 @@ void CommandRunner::match(KRunner::RunnerContext &context)
                 match.setData(def.id + "|" + queryArgs);
                 matches.append(match);
 
-                // --- 为特定动作创建匹配项 (如果配置了) ---
-                for (auto it = def.specificActions.constBegin(); it != def.specificActions.constEnd(); ++it) {
-                    QString suffix = it.key();
+                 // --- 为特定动作创建匹配项 (如果配置了) ---
+                 for (auto it = def.specificActions.constBegin(); it != def.specificActions.constEnd(); ++it) {
+                     QString suffix = it.key();
                     QString actionName = it.value();
 
                     KRunner::QueryMatch actionMatch(this);
                     actionMatch.setText(QString("%1 (%2)").arg(def.name).arg(suffix));
-                    actionMatch.setSubtext(def.description);
-                    actionMatch.setIconName(getActionMatchIcon(suffix, def.icon));
+                     actionMatch.setSubtext(def.description);
+                     actionMatch.setIconName(getActionMatchIcon(suffix, def.icon));
                     actionMatch.setRelevance(match.relevance() - 0.1);
-                    actionMatch.setData(def.id + "|" + queryArgs + "|" + suffix);
-                    matches.append(actionMatch);
-                }
+                     actionMatch.setData(def.id + "|" + queryArgs + "|" + suffix);
+                     matches.append(actionMatch);
+                 }
 
                 goto next_definition;
             }

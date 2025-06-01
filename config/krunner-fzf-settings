@@ -2,9 +2,9 @@
 TerminalExecutable=/usr/bin/konsole
 
 [Command_FindFiles]
-Name=Find Files (fzf)
-Description=Interactively find files using fd and fzf
-Icon=system-search
+Name=文件搜索
+Description=使用 fzf 快速搜索文件（Alt+V: VSCode, Alt+K: Kate）
+Icon=search
 TriggerWords=ff, findf
 CommandTemplate={FZF_EXTENDS_DIR}/fzf_find_files.sh {query}  > {output_file} 
 ExecutionMode=Terminal
@@ -17,9 +17,9 @@ Action_notepadpluplus=notepad-plus-plus {SelectedItem}
 
 
 [Command_FindFilesOrDir]
-Name=Find Files Or Dir (fzf)
-Description=Interactively find files or dir using fd and fzf 
-Icon=system-search
+Name=目录浏览
+Description=使用 fzf 浏览目录（Alt+Enter: 搜索文件, Alt+T: 终端）
+Icon=folder-search
 TriggerWords=fz, findz
 CommandTemplate={FZF_EXTENDS_DIR}/fzf_find_files_under.sh {query}  > {output_file} 
 ExecutionMode=Terminal
@@ -31,9 +31,9 @@ Action_konsole=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/terminal_open.sh {Sele
 Action_kate=OpenFileWithKate
 
 [Command_SearchHistory]
-Name=Search History (fzf)
-Description=Interactively search command history using fzf
-Icon=utilities-terminal
+Name=命令历史
+Description=搜索 Shell 命令历史（Enter: 复制到剪贴板）
+Icon=view-history
 TriggerWords=hist, fh
 CommandTemplate=history | fzf --query {query} > {output_file}
 ExecutionMode=Terminal
@@ -42,9 +42,9 @@ ResultFileTemplate=%temp_script%.result
 DefaultAction=CopyToClipboard
 
 [Command_GitBranch]
-Name=Checkout Git Branch (fzf)
-Description=Interactively checkout git branch using fzf
-Icon=vcs-branch
+Name=Git 分支切换
+Description=使用 fzf 切换 Git 分支（Enter: 切换到选中分支）
+Icon=git
 TriggerWords=fzb, gitb
 CommandTemplate=git branch | fzf | xargs git checkout
 ExecutionMode=Terminal
@@ -63,9 +63,9 @@ DefaultAction=None
 WorkingDirectoryMode=Home 
 
 [Command_WebSearch]
-Name=Search Web (DuckDuckGo)
-Description=Search the web using DuckDuckGo
-Icon=internet-web-browser
+Name=网页搜索
+Description=使用 DuckDuckGo 搜索网页
+Icon=search-web
 TriggerWords=web, ddg
 CommandTemplate=xdg-open "https://duckduckgo.com/?q={query}"
 ExecutionMode=Background
@@ -73,9 +73,9 @@ ResultType=None
 DefaultAction=None
 
 [Command_sing-box]
-Name=sing-box
-Description=switch sing-box running state
-Icon=utilities-terminal
+Name=Sing-Box 代理
+Description=管理 Sing-Box 代理状态（on: 启动, off: 停止）
+Icon=network-connect
 TriggerWords=sin, sing-box
 CommandTemplate=echo '{query}'
 ExecutionMode=Background
@@ -85,8 +85,8 @@ Action_sing-box-run=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/sing-box_switch.s
 Action_sing-box-stop=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/sing-box_switch.sh off
 
 [Command_TmuxSession]
-Name=Tmux Session
-Description=管理 tmux 会话
+Name=Tmux 会话
+Description=管理 Tmux 会话（list: 列表, new: 新建）
 Icon=utilities-terminal
 TriggerWords=tm, tmux
 CommandTemplate=echo {query}  > {output_file} 
@@ -98,8 +98,8 @@ Action_list=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/tmux_session.sh list
 Action_new=/usr/bin/konsole -e bash {FZF_EXTENDS_DIR}/tmux_session.sh new {SelectedItem}
 
 [Command_VSCodeRecent]
-Name=VSCode Recent Projects
-Description=浏览并打开 VS Code 最近的项目
+Name=VSCode 项目
+Description=浏览并打开 VS Code 最近的项目（Enter: 打开）
 Icon=visual-studio-code
 TriggerWords=code, vr
 CommandTemplate={FZF_EXTENDS_DIR}/vscode_recent.sh {query} > {output_file}
@@ -110,8 +110,8 @@ DefaultAction=OpenFileOrCD
 Action_vscode=OpenFileWithVSCode
 
 [Command_FindRepos]
-Name=Find Repo Repositories (fzf)
-Description=使用 fzf 交互式查找 repo 仓库
+Name=Repo 仓库
+Description=使用 fzf 查找 repo 仓库（Alt+Enter: 搜索文件）
 Icon=folder-git
 TriggerWords=fr, repo
 CommandTemplate={FZF_EXTENDS_DIR}/fzf_find_repos.sh {query} > {output_file}
