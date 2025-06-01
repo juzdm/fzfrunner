@@ -72,10 +72,14 @@ void CommandRunner::reloadConfiguration()
 
 // 获取动作匹配的图标名称
 QString CommandRunner::getActionMatchIcon(const QString& suffix, const QString& defaultIcon) {
-    if (suffix == "vscode") return "visual-studio-code";
+    // VSCode 相关动作
+    if (suffix == "vscode" || suffix.startsWith("code")) return "visual-studio-code";
+    // 编辑器
     if (suffix == "kate") return "kate";
-    if (suffix == "konsole") return "konsole";
-
+    if (suffix == "notepadpluplus") return "notepad-plus-plus";
+    // 终端
+    if (suffix == "konsole" || suffix == "terminal") return "utilities-terminal";
+    // 默认图标
     return defaultIcon;
 }
 
