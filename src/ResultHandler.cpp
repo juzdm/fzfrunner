@@ -18,6 +18,8 @@
 #include <KIO/Job>          // 用于 KIO::OpenUrlJob (更 KDE 的方式)
 #include <KConfigGroup>     // 可能需要访问配置来获取终端等
 #include <KSharedConfig>    // 同上
+#include <QDBusInterface>
+#include <QDBusConnection>
 
 #include "CustomeActionCmd.h" // 自定义动作类
 
@@ -257,17 +259,29 @@ void ResultHandler::actionCopyToClipboard(const QString& text)
 
 void ResultHandler::actionKRunnerQuery(const QString& text)
 {
-     qDebug() << "actionKRunnerQuery: Sending query back to KRunner:" << text;
-    // 实现方式通常是通过 D-Bus 调用 KRunner 的接口
-    // 需要包含 <QDBusInterface> 和 <QDBusConnection>
-    // QDBusInterface krunnerInterface("org.kde.krunner", "/App", "org.kde.krunner.App", QDBusConnection::sessionBus());
-    // if (krunnerInterface.isValid()) {
-    //     krunnerInterface.call("query", text);
-    // } else {
-    //     qWarning() << "actionKRunnerQuery: Failed to create D-Bus interface to KRunner.";
-    // }
-     qWarning() << "actionKRunnerQuery: D-Bus call to KRunner not fully implemented in this example.";
+    qDebug() << "actionKRunnerQuery: Sending query back to KRunner:" << text;
+    
+    // 创建 D-Bus 接口连接到 KRunner
+    QDBusInterface krunnerInterface(
+        "org.kde.krunner",
+        "/App",
+        "org.kde.krunner.App",
+        QDBusConnection::sessionBus()
+    );
 
+    if (krunnerInterface.isValid()) {
+        // 发送查询到 KRunner
+        QDBusMessage reply = krunnerInterface.call("query", text);
+        
+        if (reply.type() == QDBusMessage::ErrorMessage) {
+            qWarning() << "actionKRunnerQuery: D-Bus call failed:" << reply.errorMessage();
+        } else {
+            qDebug() << "actionKRunnerQuery: Successfully sent query to KRunner";
+        }
+    } else {
+        qWarning() << "actionKRunnerQuery: Failed to create D-Bus interface to KRunner";
+        qWarning() << "D-Bus connection error:" << QDBusConnection::sessionBus().lastError().message();
+    }
 }
 
 void ResultHandler::actionOpenFileWithApp(const QString& filePath, const QString& appExecutable)
