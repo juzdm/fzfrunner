@@ -1,9 +1,8 @@
 #!/bin/bash
 # fzf_config_template.sh: fzf 的主题和按键绑定配置模板
 
-
+# 设置默认的文件查找命令
 export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
-
 
 # 定义帮助信息模板
 get_help_msg() {
@@ -21,56 +20,70 @@ EOF
 # 获取基础 fzf 选项
 get_fzf_base_options() {
     echo "\
-  --prompt=\"搜索 (按Ctrl-h显示帮助) > \" \
-  --height=\"100%\" \
-  --layout=reverse \
-  --border=rounded \
-  --margin=1,2 \
-  --padding=1 \
-  --info=inline \
-  --header '' \
-  --print-query "
+--prompt=搜索 \
+--height=100% \
+--layout=reverse \
+--border=rounded \
+--margin=1,2 \
+--padding=1 \
+--info=inline"
 }
 
 # 获取 fzf 颜色主题（Tokyo Night）
 get_fzf_color_theme() {
-    echo "\
-  --color=fg:#c0caf5,bg:#24283b,preview-bg:#24283b \
-  --color=fg+:#c0caf5,bg+:#2f354a \
-  --color=info:#7aa2f7,prompt:#7aa2f7,border:#7aa2f7 \
-  --color=pointer:#bb9af7,marker:#9ece6a,header:#7aa2f7 \
-  --color=spinner:#9ece6a,hl:#ff9e64,hl+:#ff9e64"
+    # 基础颜色
+    local base_colors="\
+--color=fg:#c0caf5,bg:#24283b,preview-bg:#24283b \
+--color=fg+:#c0caf5,bg+:#2f354a"
+
+    # 信息和提示颜色
+    local info_colors="\
+--color=info:#7aa2f7,prompt:#7aa2f7 \
+--color=pointer:#bb9af7,marker:#9ece6a"
+
+    # 其他 UI 元素颜色
+    local ui_colors="\
+--color=spinner:#9ece6a,header:#7aa2f7 \
+--color=hl:#ff9e64,hl+:#ff9e64"
+
+    echo "$base_colors $info_colors $ui_colors"
 }
 
 # 获取 fzf 预览配置
 get_fzf_preview_config() {
-    echo "\
-  --preview 'bat --color=always --style=numbers,changes --line-range :200 {} 2>/dev/null || cat {} 2>/dev/null || echo \"Binary file\"' \
-  --preview-window='right:60%:border-rounded'"
+    echo '--preview ls'
 }
 
 # 获取基础按键绑定
 get_fzf_key_bindings() {
-    local HELP_MSG="\$(get_help_msg)"
-    echo "\
-  --bind 'ctrl-/:change-preview-window(hidden|)' \
-  --bind 'ctrl-y:execute-silent(echo -n {} | xclip -selection clipboard)+abort' \
-  --bind 'ctrl-v:execute(code {})+abort' \
-  --bind 'ctrl-e:execute(kate {})+abort' \
-  --bind 'ctrl-o:execute(xdg-open {})+abort' \
-  --bind 'ctrl-p:toggle-preview' \
-  --bind 'ctrl-s:toggle-sort' \
-  --bind 'ctrl-u:preview-page-up' \
-  --bind 'ctrl-d:preview-page-down' \
-  --bind 'alt-u:preview-up' \
-  --bind 'alt-d:preview-down' \
-  --bind \"ctrl-h:change-header($HELP_MSG)\""
+    local HELP_MSG=$(get_help_msg)
+
+    # 基础导航绑定
+    local nav_bindings="\
+--bind='ctrl-p:toggle-preview' \
+--bind='ctrl-s:toggle-sort' \
+--bind='ctrl-/:change-preview-window(hidden|)'"
+
+    # 预览窗口导航
+    local preview_bindings="\
+--bind='ctrl-u:preview-page-up' \
+--bind='ctrl-d:preview-page-down' \
+--bind='alt-u:preview-up' \
+--bind='alt-d:preview-down'"
+
+    # 动作绑定
+    local action_bindings="\
+--bind='ctrl-v:execute:code {}' \
+--bind='ctrl-e:execute:kate {}' \
+--bind='ctrl-o:execute:xdg-open {}'"
+
+    # 帮助信息绑定
+    local help_binding="--bind='ctrl-h:change-header:${HELP_MSG}'"
+
+    echo "$nav_bindings $preview_bindings $action_bindings $help_binding"
 }
 
 # 获取完整的 fzf 配置
 get_fzf_complete_config() {
-    echo "$(get_fzf_base_options) \
-$(get_fzf_color_theme) \
-$(get_fzf_preview_config) \
-$(get_fzf_key_bindings)"
+    echo "$(get_fzf_base_options) $(get_fzf_color_theme) $(get_fzf_preview_config) $(get_fzf_key_bindings)"
 } 
