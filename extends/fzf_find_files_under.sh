@@ -9,6 +9,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
 # 获取从 fzf execute 传来的第一个参数
 raw_path="$1"
+output_file="$2"
 
 # 如果参数为空，则使用HOME目录
 if [[ -z "$raw_path" ]]; then
@@ -23,7 +24,7 @@ cleaned_path=$(echo "$raw_path" | sed "s/^'//;s/'$//")
 cd "$cleaned_path" || exit 1
 
 # 构建 fzf 命令
-FZF_OPTS="$(get_fzf_complete_config) --bind='alt-enter:execute($SCRIPT_DIR/fzf_find_files.sh {})+abort'"
+FZF_OPTS="$(get_fzf_complete_config) --bind='alt-enter:execute($SCRIPT_DIR/fzf_find_files.sh {} > $output_file)+abort'"
 
 # 执行命令
 selected_dir=$(fd -t d | eval "fzf $FZF_OPTS")
@@ -32,8 +33,8 @@ selected_dir=$(fd -t d | eval "fzf $FZF_OPTS")
 if [[ -n "$selected_dir" ]]; then
   if [ -d "$selected_dir" ]; then
     # 只有当选中的是目录时，才输出完整路径
-    echo "$PWD/$selected_dir"
+    echo "$PWD/$selected_dir" > "$output_file"
   else
-    echo "$selected_dir"
+    echo "$selected_dir" > "$output_file"
   fi
 fi

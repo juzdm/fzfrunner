@@ -111,3 +111,7 @@ get_fzf_key_bindings() {
 get_fzf_complete_config() {
     echo "$(get_fzf_base_options) $(get_fzf_color_theme) $(get_fzf_preview_config) $(get_fzf_key_bindings)"
 } 
+
+get_fzf_ui_config() {
+    echo "$(get_fzf_base_options) $(get_fzf_color_theme) $(get_fzf_preview_config)"
+} 
