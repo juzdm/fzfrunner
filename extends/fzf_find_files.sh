@@ -2,6 +2,9 @@
 # fzf_find_files.sh: fzf execute 动作的辅助脚本
 # 用法: ./fzf_find_files.sh "可能带引号的路径"
 
+# 导入配置模板
+source "$(dirname "$0")/fzf_config_template.sh"
+
 # 日志功能开关（默认关闭）
 DEBUG=0
 LOG_FILE="/tmp/fzf_find_files.log"
@@ -62,39 +65,9 @@ echo "0" > /tmp/help_state
 log "Starting fzf with incremental fd search..."
 
 # 使用 fzf 的动态重载功能，当用户输入时才执行 fd
-selected_file=$(fzf \
-  --prompt="搜索 > " \
-  --height="100%" \
-  --layout=reverse \
-  --border=rounded \
-  --margin=1,2 \
-  --padding=1 \
-  --info=inline \
-  --color=fg:#c0caf5,bg:#24283b,preview-bg:#24283b \
-  --color=fg+:#c0caf5,bg+:#2f354a \
-  --color=info:#7aa2f7,prompt:#7aa2f7,border:#7aa2f7 \
-  --color=pointer:#bb9af7,marker:#9ece6a,header:#7aa2f7 \
-  --color=spinner:#9ece6a,hl:#ff9e64,hl+:#ff9e64 \
-  --preview 'bat --color=always --style=numbers,changes --line-range :200 {} 2>/dev/null || cat {} 2>/dev/null || echo "Binary file"' \
-  --preview-window='right:60%:border-rounded' \
-  --bind 'ctrl-/:change-preview-window(hidden|)' \
-  --bind "change:reload:fd -t f {q}" \
-  --bind "start:reload:fd -t f" \
-  --bind 'ctrl-y:execute-silent(echo -n {} | xclip -selection clipboard)+abort' \
-  --bind 'ctrl-v:execute(code {})+abort' \
-  --bind 'ctrl-e:execute(kate {})+abort' \
-  --bind 'ctrl-o:execute(xdg-open {})+abort' \
-  --bind 'ctrl-p:toggle-preview' \
-  --bind 'ctrl-s:toggle-sort' \
-  --bind 'ctrl-u:preview-page-up' \
-  --bind 'ctrl-d:preview-page-down' \
-  --bind 'alt-u:preview-up' \
-  --bind 'alt-d:preview-down' \
-  --bind "ctrl-h:change-header($HELP_MSG)" \
-  --header '' \
-  --prompt="搜索 (按Ctrl-h显示帮助) > " \
-  --print-query \
-  --disabled)
+selected_file=$(eval "fzf $(get_fzf_complete_config) \
+  --bind 'change:reload:fd -t f {q}' \
+  --bind 'start:reload:fd -t f'")
 
 # 清理临时文件
 rm -f /tmp/help_state
