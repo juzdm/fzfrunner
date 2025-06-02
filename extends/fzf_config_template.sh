@@ -51,7 +51,31 @@ get_fzf_color_theme() {
 
 # 获取 fzf 预览配置
 get_fzf_preview_config() {
-    echo '--preview ls'
+    # 预览命令：根据文件类型使用不同的预览方式
+    local preview_cmd='\
+if [[ -d {} ]]; then \
+  ls -la --color=always {}; \
+elif [[ -f {} ]]; then \
+  case $(file --mime-type -b {}) in \
+    text/*|application/json|application/x-shellscript|application/x-php|application/x-yaml|application/xml) \
+      cat {} 2>/dev/null | head -200;; \
+    image/*) \
+      echo "图片文件: $(file -b {})";; \
+    application/pdf) \
+      echo "PDF 文件: $(file -b {})";; \
+    application/zip|application/x-tar|application/x-gzip|application/x-bzip2) \
+      echo "压缩文件: $(file -b {})";; \
+    *) \
+      echo "二进制文件: $(file -b {})";; \
+  esac \
+fi'
+
+    # 预览窗口配置
+    local preview_window="\
+--preview-window=right:50%:border-rounded \
+--preview-window=cycle"
+
+    echo "--preview '$preview_cmd' $preview_window"
 }
 
 # 获取基础按键绑定
