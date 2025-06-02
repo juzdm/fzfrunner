@@ -90,5 +90,6 @@ install(PROGRAMS
     extends/vscode_recent.sh
     extends/aosp-find-repo.sh
     extends/fzf_find_repos.sh
+    extends/fzf_config_template.sh
     DESTINATION ${EXTENDS_INSTALL_DIR}
 )
