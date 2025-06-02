@@ -62,12 +62,10 @@ EOF
 echo "0" > /tmp/help_state
 
 # 在当前目录下搜索文件，并输出完整路径
-log "Starting fzf with incremental fd search..."
+log "Starting fzf with fd search..."
 
 # 使用 fzf 的动态重载功能，当用户输入时才执行 fd
-selected_file=$(eval "fzf $(get_fzf_complete_config) \
-  --bind 'change:reload:fd -t f {q}' \
-  --bind 'start:reload:fd -t f'")
+selected_file=$(eval "fzf $(get_fzf_complete_config)")
 
 # 清理临时文件
 rm -f /tmp/help_state
@@ -76,7 +74,6 @@ log "FZF completed. Selected: $selected_file"
 
 # 如果有选中的文件，输出完整路径
 if [ -n "$selected_file" ]; then
-  # 获取最后一行（实际选中的文件）
   file=$(echo "$selected_file" | tail -n1)
   if [ -n "$file" ]; then
     echo "$PWD/$file"

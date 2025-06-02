@@ -1,6 +1,10 @@
 #!/bin/bash
 # fzf_config_template.sh: fzf 的主题和按键绑定配置模板
 
+
+export FZF_DEFAULT_COMMAND='fd --type f --hidden --follow --exclude .git'
+
+
 # 定义帮助信息模板
 get_help_msg() {
     cat << 'EOF'
@@ -25,8 +29,7 @@ get_fzf_base_options() {
   --padding=1 \
   --info=inline \
   --header '' \
-  --print-query \
-  --disabled"
+  --print-query "
 }
 
 # 获取 fzf 颜色主题（Tokyo Night）
