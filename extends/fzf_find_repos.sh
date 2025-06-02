@@ -1,10 +1,21 @@
 #!/bin/bash
 
+source "$(dirname "${BASH_SOURCE[0]}")/fzf_config_template.sh"
+
+# 获取 repo 仓库帮助信息
+get_repo_help() {
+    cat << 'EOF'
+┌ 操作 ──────────┐  ┌ 功能 ──────────┐  ┌ 预览 ──────────┐
+│ enter   选择仓库 │  │ alt-g     AOSP │  │ ctrl-h 向下滚动 │
+│ ctrl-c  取消操作 │  │ alt-enter 搜索 │  │ ctrl-l 向上滚动 │
+└──────────────────┘  └──────────────────┘  └──────────────────┘
+EOF
+}
+
 # 定义常用的代码目录（按优先级排序）
 COMMON_DIRS=(
     "$HOME/disk"
     "$HOME/code"
-    "$HOME/projects"
 )
 
 # 定义搜索深度和 git 目录
@@ -33,6 +44,9 @@ done
 # 获取脚本所在目录的绝对路径
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
+# 从模板获取基本配置
+FZF_OPTS="$(get_fzf_base_options) $(get_fzf_color_theme)"
+
 # 使用 fzf 进行交互式搜索
 selected=$(sort -u "$TEMP_FILE" | fzf \
     --prompt="repo仓库 (ENTER:选择, ALT-G:AOSP子仓库, ALT-ENTER:文件搜索) > " \
@@ -41,7 +55,9 @@ selected=$(sort -u "$TEMP_FILE" | fzf \
     --height=100% \
     --bind 'enter:accept' \
     --bind "alt-g:execute($SCRIPT_DIR/aosp-find-repo.sh {})+abort" \
-    --bind "alt-enter:execute($SCRIPT_DIR/fzf_find_files.sh {})+abort")
+    --bind "alt-enter:execute($SCRIPT_DIR/fzf_find_files.sh {})+abort" \
+    --bind 'ctrl-c:abort' \
+    $FZF_OPTS)
 
 # 如果用户选择了一个仓库
 if [ -n "$selected" ]; then
