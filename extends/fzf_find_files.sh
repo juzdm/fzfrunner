@@ -43,24 +43,49 @@ cd "$cleaned_path" || {
 }
 log "Changed to directory: $(pwd)"
 
+# 定义帮助信息
+HELP_MSG=$(cat << 'EOF'
+文件搜索 @ %s
+
+快捷键说明:
+╭─ 导航 ──────────╮ ╭─ 动作 ──────────╮ ╭─ 切换 ──────────╮
+│ ctrl-j/k: 上下行 │ │ enter: 输入选择 │ │ ctrl-y: 复制路径 │
+│ ctrl-u/d: 翻页   │ │ ctrl-v: VSCode  │ │ ctrl-p: 预览开关 │
+│ alt-u/d:  滚动   │ │ ctrl-e: Kate    │ │ ctrl-s: 排序开关 │
+│                  │ │ ctrl-o: 打开     │ │ ctrl-h: 帮助显示 │
+│                  │ │ ctrl-/: 预览     │ │                  │
+╰──────────────────╯ ╰──────────────────╯ ╰──────────────────╯
+EOF
+)
+
+# 格式化帮助信息，插入当前目录
+HELP_MSG=$(printf "$HELP_MSG" "$(pwd)")
+
 # 在当前目录下搜索文件，并输出完整路径
 log "Starting fzf with incremental fd search..."
 
 # 使用 fzf 的动态重载功能，当用户输入时才执行 fd
 selected_file=$(fzf \
-  --prompt="文件 @ [$(pwd)] > " \
+  --prompt="搜索 > " \
   --height="100%" \
   --preview 'bat --color=always --style=plain --line-range :200 {} 2>/dev/null || cat {} 2>/dev/null || echo "Binary file"' \
   --preview-window='right:60%:wrap' \
   --bind 'ctrl-/:change-preview-window(hidden|)' \
   --bind "change:reload:fd -t f {q}" \
   --bind "start:reload:fd -t f" \
-  --bind 'ctrl-y:execute-silent(echo -n {} | xclip -selection clipboard)' \
-  --bind 'ctrl-v:execute(code {})' \
-  --bind 'ctrl-e:execute(kate {})' \
-  --bind 'ctrl-o:execute(xdg-open {})' \
+  --bind 'ctrl-y:execute-silent(echo -n {} | xclip -selection clipboard)+abort' \
+  --bind 'ctrl-v:execute(code {})+abort' \
+  --bind 'ctrl-e:execute(kate {})+abort' \
+  --bind 'ctrl-o:execute(xdg-open {})+abort' \
   --bind 'ctrl-p:toggle-preview' \
   --bind 'ctrl-s:toggle-sort' \
+  --bind 'ctrl-u:preview-page-up' \
+  --bind 'ctrl-d:preview-page-down' \
+  --bind 'alt-u:preview-up' \
+  --bind 'alt-d:preview-down' \
+  --bind "ctrl-h:change-header($HELP_MSG)+change-prompt(搜索 (按Ctrl-h显示帮助) > )" \
+  --header '' \
+  --prompt="搜索 (按Ctrl-h显示帮助) > " \
   --print-query \
   --disabled)
 
