@@ -1,5 +1,18 @@
 #!/bin/bash
 
+source "$(dirname "${BASH_SOURCE[0]}")/fzf_config_template.sh"
+
+# 获取 tmux 会话帮助信息
+get_tmux_help() {
+    cat << 'EOF'
+┌ 操作 ──────────┐  ┌ 管理 ──────────┐  ┌ 预览 ──────────┐
+│ enter   选择会话 │  │ ctrl-x 终止会话 │  │ ctrl-h 向下滚动 │
+│ ctrl-c  取消选择 │  │ ctrl-r 刷新列表 │  │ ctrl-l 向上滚动 │
+│                  │  │                  │  │ ctrl-/ 预览开关 │
+└──────────────────┘  └──────────────────┘  └──────────────────┘
+EOF
+}
+
 # 检查参数
 if [ -z "$1" ]; then
     echo "用法: $0 <list|new [session_name]>"
@@ -10,24 +23,22 @@ fi
 
 case "$1" in
     "list")
+        # 从模板获取基本配置
+        FZF_OPTS="$(get_fzf_base_options) $(get_fzf_color_theme)"
+        
         # 使用 fzf 预览会话内容并提供快捷键操作
         selected_session=$(tmux list-sessions -F "#{session_name}" | fzf \
-            --preview 'tmux capture-pane -pt {}'  \
+            --preview 'tmux capture-pane -pt {}' \
             --preview-window=right:60% \
-            --header '查看和管理 tmux 会话' \
+            --header "$(get_tmux_help)" \
             --header-first \
-            --prompt '选择会话 > ' \
             --bind 'enter:accept' \
             --bind 'ctrl-x:execute-silent(tmux kill-session -t {})+reload(tmux list-sessions -F "#{session_name}")' \
             --bind 'ctrl-r:reload(tmux list-sessions -F "#{session_name}")' \
             --bind 'ctrl-h:preview-down,ctrl-l:preview-up' \
             --bind 'ctrl-/:change-preview-window(hidden|)' \
             --bind 'ctrl-c:abort' \
-            --info=inline \
-            --layout=reverse \
-            --pointer='>' \
-            --marker='*' \
-            --header $'操作说明:\n\tEnter: 连接会话\n\tCtrl-X: 终止会话\n\tCtrl-R: 刷新列表\n\tCtrl-H/L: 预览滚动\n\tCtrl-/: 切换预览窗口')
+            $FZF_OPTS)
 
         # 如果选择了会话，则连接到该会话
         if [ -n "$selected_session" ]; then
